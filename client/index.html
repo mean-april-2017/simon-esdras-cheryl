@@ -1,16 +1,87 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="simonApp">
+
 <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="/angular.js" type="text/javascript"></script>
-    <script src="/app.js" type="text/javascript"></script>
+    <script src="../node_modules/angular/angular.js" type="text/javascript"></script>
+    <script src="app.js" type="text/javascript"></script>
+    <script>
+      var simonApp = angular.module('simonApp', []);
+      simonApp.controller('gameController', function($scope){
+        $scope.addPattern = function(color){
+          $scope.pattern.push(color)
+        };
+
+        $scope.pattern = [];
+        $scope.pattern2 = [];
+
+        $scope.testPattern = function(color){
+          if($scope.pattern.length == 0){
+            $scope.pattern.push(color);
+            $scope.pattern2 = [];
+            $scope.switchUser();
+
+          }else if($scope.pattern2.length == $scope.pattern.length && $scope.pattern.length !== 0){
+            $scope.pattern2.push(color);
+            $scope.pattern = $scope.pattern2
+            $scope.pattern2 = [];
+            $scope.switchUser();
+
+          }else if($scope.pattern2.length < $scope.pattern.length && $scope.pattern[$scope.pattern2.length] == color){
+            $scope.pattern2.push(color);
+
+          }else{
+            $scope.switchUser();
+          }
+          console.log("PATTERN 1 ====", $scope.pattern);
+          console.log("PATTERN 2 ====",$scope.pattern2);
+          console.log("CURRENT USER:", $scope.currentUser);
+        };
+
+        $scope.colors = ["Red", "Green", "Yellow", "Blue"]
+
+        $scope.users = ["Player 1", "Player 2"]
+
+        $scope.addUser = function(){
+          $scope.users[0] = $scope.p1;
+          $scope.users[1] = $scope.p2;
+          $scope.currentUser = $scope.users[0];
+        };
+
+        $scope.currentUser = $scope.users[0];
+
+        $scope.switchUser = function(){
+          if ($scope.currentUser == $scope.users[0]){
+            $scope.currentUser = $scope.users[1];
+          }
+          else{
+            $scope.currentUser= $scope.users[0];
+          }
+        }
+
+      })
+
+    </script>
     <title>Simon</title>
 </head>
 <body>
+  <div class="container" ng-controller= "gameController">
 
-    <h1>Simon</h1>
+    <h1>Welcome to Simon</h1>
+    <form ng-submit="addUser()">
+      <input placeholder="Player 1" type="text" ng-model="p1">
+      <input placeholder="Player 2" type="text" ng-model="p2">
+      <input type="submit" value="Start Game">
+    </form>
+  </br>
 
+
+
+    <h5 ng-bind="currentUser">It's your turn {{currentUser}}!</h5>
+    <p ng-if="pattern">The last color was {{pattern[pattern.length-1]}}</p>
+    <button ng-repeat="color in colors" ng-click="testPattern(color)" style="background: {{color}}">{{color}}</button>
 </body>
 </html>
